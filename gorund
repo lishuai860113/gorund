@@ -1,0 +1,31 @@
+#!/bin/env python
+
+import hashlib
+import subprocess
+import sys
+import time
+
+def get_file_md5(filename):
+	_md5str = ""
+	with open(filename, "r") as _gofile:
+		_data = _gofile.read()
+		_md5str = hashlib.md5(_data).hexdigest()
+	return _md5str
+
+def gorund(filename):
+	_cmd = "gorun " + filename
+	_premd5 = ""
+	_currmd5 = ""
+	p = None
+	while True:
+		_currmd5 = get_file_md5(filename)
+		if _currmd5 != _premd5:
+			if p:
+				p.kill()
+			p = subprocess.Popen(_cmd, stdout=subprocess.PIPE, shell=True)
+		_premd5 = _currmd5
+		time.sleep(3)
+
+if __name__ == '__main__':
+	#print get_file_md5(sys.argv[1])
+    gorund(sys.argv[1])
